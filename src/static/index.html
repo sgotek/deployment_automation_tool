@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Công Cụ Tự Động Hóa Triển Khai</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #promptResult {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid #ced4da;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Công Cụ Tự Động Hóa Triển Khai</h1>
+        <form id="deploymentForm">
+            <div class="form-group">
+                <label for="githubUsername">GitHub Username:</label>
+                <input type="text" id="githubUsername" name="githubUsername" required>
+            </div>
+            <div class="form-group">
+                <label for="githubPat">GitHub Personal Access Token (PAT):</label>
+                <input type="password" id="githubPat" name="githubPat" required>
+            </div>
+            <div class="form-group">
+                <label for="repoName">Tên Repository:</label>
+                <input type="text" id="repoName" name="repoName" required>
+            </div>
+            <div class="form-group">
+                <label for="subdomain">Subdomain (ví dụ: `promptnuochoa`):</label>
+                <input type="text" id="subdomain" name="subdomain" required>
+            </div>
+            <div class="form-group">
+                <label for="vpsIp">IP VPS:</label>
+                <input type="text" id="vpsIp" name="vpsIp" required>
+            </div>
+            <div class="form-group">
+                <label for="domain">Domain gốc (ví dụ: `automakemoney.online`):</label>
+                <input type="text" id="domain" name="domain" required>
+            </div>
+            <div class="form-group">
+                <label for="cloudflareEmail">Cloudflare Email:</label>
+                <input type="text" id="cloudflareEmail" name="cloudflareEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="cloudflareGlobalApiKey">Cloudflare Global API Key:</label>
+                <input type="password" id="cloudflareGlobalApiKey" name="cloudflareGlobalApiKey" required>
+            </div>
+            <div class="form-group">
+                <label for="cloudflareOriginCaKey">Cloudflare Origin CA Key (nếu có):</label>
+                <input type="password" id="cloudflareOriginCaKey" name="cloudflareOriginCaKey">
+            </div>
+            <button type="submit">Tạo Prompt Triển Khai</button>
+        </form>
+        <div id="promptResult"></div>
+    </div>
+
+    <script>
+        const deploymentForm = document.getElementById("deploymentForm");
+        const promptResultDiv = document.getElementById("promptResult");
+
+        deploymentForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const githubUsername = document.getElementById("githubUsername").value;
+            const githubPat = document.getElementById("githubPat").value;
+            const repoName = document.getElementById("repoName").value;
+            const subdomain = document.getElementById("subdomain").value;
+            const vpsIp = document.getElementById("vpsIp").value;
+            const domain = document.getElementById("domain").value;
+            const cloudflareEmail = document.getElementById("cloudflareEmail").value;
+            const cloudflareGlobalApiKey = document.getElementById("cloudflareGlobalApiKey").value;
+            const cloudflareOriginCaKey = document.getElementById("cloudflareOriginCaKey").value;
+
+            const prompt = `Tôi muốn triển khai một dự án mới với các thông tin sau:\n\n` +
+                           `**GitHub:**\n` +
+                           `- Username: ${githubUsername}\n` +
+                           `- PAT: ${githubPat}\n` +
+                           `- Repository Name: ${repoName}\n\n` +
+                           `**VPS:**\n` +
+                           `- IP: ${vpsIp}\n` +
+                           `- Subdomain: ${subdomain}.${domain}\n\n` +
+                           `**Cloudflare:**\n` +
+                           `- Email: ${cloudflareEmail}\n` +
+                           `- Global API Key: ${cloudflareGlobalApiKey}\n` +
+                           `- Origin CA Key: ${cloudflareOriginCaKey || "Không có"}\n\n` +
+                           `Vui lòng thực hiện các bước sau:\n` +
+                           `1. Tạo repository \"${repoName}\" trên GitHub của \"${githubUsername}\" (nếu chưa có) và đẩy code lên.\n` +
+                           `2. Thêm bản ghi DNS A cho \"${subdomain}.${domain}\" trỏ đến \"${vpsIp}\" trên Cloudflare, đảm bảo tắt chế độ proxy.\n` +
+                           `3. SSH vào VPS \"${vpsIp}\" với quyền root, clone repository \"${repoName}\" vào thư mục \"/var/www/${subdomain}\", cài đặt dependencies và chạy ứng dụng Flask.\n` +
+                           `4. Cấu hình Nginx hoặc Apache để phục vụ ứng dụng Flask trên \"${subdomain}.${domain}\".\n` +
+                           `5. Cấu hình SSL/TLS với chứng chỉ Cloudflare Origin CA (nếu có) hoặc Let\\'s Encrypt.\n` +
+                           `6. Đảm bảo ứng dụng chạy ổn định và có thể truy cập được qua \"https://${subdomain}.${domain}\".`;
+
+            promptResultDiv.textContent = prompt;
+        });
+    </script>
+</body>
+</html>
